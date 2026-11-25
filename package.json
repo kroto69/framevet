@@ -1,0 +1,20 @@
+{
+  "name": "framevet",
+  "version": "0.1.0",
+  "description": "Gate Remotion renders behind cheap key-frame checks judged by the Kane CLI browser tester",
+  "type": "module",
+  "bin": {
+    "framevet": "bin/framevet.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/unit/*.test.js test/integration/*.test.js"
+  },
+  "license": "MIT"
+}

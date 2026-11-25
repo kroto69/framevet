@@ -1,0 +1,14 @@
+{
+  "entry": "src/index.js",
+  "render": { "command": "npx remotion render" },
+  "kane": { "timeoutSec": 360 },
+  "compositions": {
+    "PromoVideo": {
+      "frames": [150, 420],
+      "expect": {
+        "150": "all 7 model chips are fully visible, none cut off at the edges",
+        "420": "the logo and the call-to-action text are fully visible"
+      }
+    }
+  }
+}

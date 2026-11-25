@@ -1,0 +1,22 @@
+{
+  "name": "framevet-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render",
+    "check": "node ../../bin/framevet.js check PromoVideo --json",
+    "render:vet": "node ../../bin/framevet.js render PromoVideo --json",
+    "demo:break": "node scripts/toggle.js true",
+    "demo:fix": "node scripts/toggle.js false"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.546"
+  },
+  "devDependencies": {
+    "@remotion/cli": "^4.0.546"
+  }
+}
