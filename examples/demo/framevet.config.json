@@ -9,6 +9,15 @@
         "150": "all 7 model chips are fully visible, none cut off at the edges",
         "420": "the logo and the call-to-action text are fully visible"
       }
+    },
+    "Explainer": {
+      "frames": [900, 2400, 3600, 4650],
+      "expect": {
+        "900": "the framevet pipeline diagram is fully visible: all 8 stage cards plus both verdict branches (FAIL exit 11 no render, PASS exit 0 render once) are readable",
+        "2400": "the mock gallery shows both frame cards with Frame 150 / Frame 420 labels and their expectation text, and the OBSERVATION lines are visible in the terminal card",
+        "3600": "the GATE FAILED scene is fully visible: exit 11 banner, the JSON report with rendered:false, and the evidence path .framevet/<runId>/",
+        "4650": "the GATE PASSED scene is fully visible: all PASS observation lines, rendered:true with out/PromoVideo.mp4, and the framevet commands plus repo URL text are readable"
+      }
     }
   }
 }

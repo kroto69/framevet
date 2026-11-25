@@ -8,6 +8,8 @@
     "render": "remotion render",
     "check": "node ../../bin/framevet.js check PromoVideo --json",
     "render:vet": "node ../../bin/framevet.js render PromoVideo --json",
+    "check:explainer": "node ../../bin/framevet.js check Explainer --json",
+    "render:explainer": "node ../../bin/framevet.js render Explainer --json",
     "demo:break": "node scripts/toggle.js true",
     "demo:fix": "node scripts/toggle.js false"
   },
