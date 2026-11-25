@@ -12,6 +12,10 @@ Plain JavaScript (ESM), Node >= 18, **zero runtime dependencies** (Node built-in
 
 ## How it works
 
+![How it works](docs/how-it-works.svg)
+
+<details><summary>Text version</summary>
+
 ```
  you: "Claude, make promo video X"
         │
@@ -35,6 +39,8 @@ Plain JavaScript (ESM), Node >= 18, **zero runtime dependencies** (Node built-in
    .framevet/<runId>/ evidence        ▼
                               render runs ONCE → out/X.mp4
 ```
+
+</details>
 
 A pass requires one `OBSERVATION <N>: PASS|FAIL - …` line per configured frame in Kane's
 output plus Kane's own success exit code — a bare "passed" is treated as **no evidence**.
