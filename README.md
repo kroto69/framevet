@@ -13,7 +13,7 @@ Plain JavaScript (ESM), Node >= 18, **zero runtime dependencies** (Node built-in
 ## How it works
 
 ```
- you: "Claude, buat video promo X"
+ you: "Claude, make promo video X"
         │
         ▼
  Claude edits the Remotion code (as usual)
