@@ -201,6 +201,20 @@ test('browser preflight failure: exit 14 at stage browser', { timeout: 60000 }, 
   assert.match(obj.reason, /headless browser check failed/);
 });
 
+test('missing remotion bin (npm install not run / dev deps omitted): exit 14 with a specific hint', { timeout: 60000 }, async () => {
+  const project = makeProject();
+  const res = await runGate(project, ['check', 'PromoVideo', '--json'], {
+    FAKE_KANE_MODE: 'pass',
+    STUB_NO_REMOTION_BIN: '1',
+  });
+  assert.equal(res.code, 14, res.stderr);
+  const obj = parseJsonStdout(res.stdout);
+  assert.equal(obj.stage, 'browser');
+  assert.match(obj.reason, /could not determine executable/);
+  assert.match(obj.reason, /@remotion\/cli/);
+  assert.match(obj.reason, /npm install/);
+});
+
 test('render command on pass: exit 0, render runs exactly once with entry and composition', { timeout: 60000 }, async () => {
   const project = makeProject();
   const res = await runGate(project, ['render', 'PromoVideo', '--json'], { FAKE_KANE_MODE: 'pass' });

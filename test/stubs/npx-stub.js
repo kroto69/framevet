@@ -2,7 +2,7 @@
 // Fake `npx` used ONLY by the integration tests. The test harness copies this
 // file into a temp bin dir as `npx` and prepends that dir to PATH, so the CLI's
 // `npx remotion ...` calls hit this stub instead of real Remotion.
-// Fails on demand via STUB_BROWSER_FAIL=1 / STUB_STILL_FAIL=1.
+// Fails on demand via STUB_BROWSER_FAIL=1 / STUB_STILL_FAIL=1 / STUB_NO_REMOTION_BIN=1.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -10,6 +10,9 @@ const args = process.argv.slice(2);
 if (args[0] !== 'remotion') {
   process.stderr.write(`npx-stub: unexpected args: ${args.join(' ')}\n`);
   process.exitCode = 3;
+} else if (process.env.STUB_NO_REMOTION_BIN === '1') {
+  process.stderr.write('npm error could not determine executable to run\nnpm error A complete log of this run can be found in: /tmp/npm-debug.log\n');
+  process.exitCode = 1;
 } else if (args[1] === 'browser') {
   if (process.env.STUB_BROWSER_FAIL === '1') {
     process.stderr.write('npx-stub: simulated failure: could not download headless browser\n');
