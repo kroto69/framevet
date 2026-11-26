@@ -273,7 +273,7 @@ function SceneDengan() {
           },
         },
         row.map(({ s, i }, k) => {
-          const from = 60 + i * 90;
+          const from = 40 + i * 60;
           return e(
             React.Fragment,
             { key: s[0] },
@@ -285,7 +285,7 @@ function SceneDengan() {
     ),
     e(
       'div',
-      { style: { position: 'absolute', top: 900, left: 90, right: 90, textAlign: 'center', ...fadeAt(60 + 8 * 90) } },
+      { style: { position: 'absolute', top: 900, left: 90, right: 90, textAlign: 'center', ...fadeAt(40 + 8 * 60) } },
       e(
         'div',
         {
