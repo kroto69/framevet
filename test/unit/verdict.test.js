@@ -30,6 +30,15 @@ test('parser reads OBSERVATION from NDJSON string fields (remark) without traili
   assert.deepEqual(obs[0], { frame: 150, status: 'PASS', text: 'All 7 model chips are fully visible within the viewport' });
 });
 
+test('parser splits multi-line NDJSON remark values: one remark can carry several OBSERVATION lines', () => {
+  const remark = 'OBSERVATION 150: PASS - chips fully visible.\\nOBSERVATION 420: FAIL - logo overlaps the CTA text.\\nFAIL';
+  const raw = JSON.stringify({ step: 4, status: 'done', remark, v: 1, ts: '2026-11-26T09:31:20.690Z' });
+  const obs = parseObservations(raw);
+  assert.equal(obs.length, 2);
+  assert.deepEqual(obs[0], { frame: 150, status: 'PASS', text: 'chips fully visible.' });
+  assert.deepEqual(obs[1], { frame: 420, status: 'FAIL', text: 'logo overlaps the CTA text.' });
+});
+
 test('parser keeps first observation per frame and sorts by frame', () => {
   const raw = [
     'OBSERVATION 420: PASS - later',

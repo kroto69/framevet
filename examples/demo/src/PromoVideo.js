@@ -99,12 +99,12 @@ export function PromoVideo() {
     ),
     e(
       'div',
-      { style: { position: 'absolute', bottom: 220, left: 80, opacity: outro } },
-      e(Img, { src: staticFile('logo.svg'), style: { height: 160 } }),
+      { style: { position: 'absolute', bottom: 120, left: 80, opacity: outro } },
+      e(Img, { src: staticFile('logo.svg'), style: { height: 140 } }),
     ),
     e(
       'div',
-      { style: { position: 'absolute', bottom: 240, right: 80, textAlign: 'right', opacity: outro } },
+      { style: { position: 'absolute', bottom: 300, right: 80, textAlign: 'right', opacity: outro } },
       e('div', { style: { fontSize: 64, fontWeight: 700 } }, 'Render with confidence'),
       e(
         'div',

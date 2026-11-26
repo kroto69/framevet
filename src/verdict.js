@@ -16,6 +16,9 @@ export function parseObservations(raw) {
     const obsText = m[3].replace(/["'}]+$/, '').trim();
     if (!byFrame.has(frame)) byFrame.set(frame, { frame, status, text: obsText });
   };
+  const scanText = (text) => {
+    for (const piece of String(text).replace(/\\n/g, '\n').split(/\r?\n/)) scan(piece);
+  };
   for (const line of String(raw || '').split(/\r?\n/)) {
     if (!line.includes('OBSERVATION')) continue;
     let parsed = null;
@@ -26,10 +29,10 @@ export function parseObservations(raw) {
     }
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
       for (const v of Object.values(parsed)) {
-        if (typeof v === 'string' && v.includes('OBSERVATION')) scan(v);
+        if (typeof v === 'string' && v.includes('OBSERVATION')) scanText(v);
       }
     }
-    scan(line);
+    scanText(line);
   }
   return [...byFrame.values()].sort((a, b) => a.frame - b.frame);
 }
