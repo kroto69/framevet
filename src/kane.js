@@ -31,7 +31,7 @@ export function buildObjective({ url, composition }) {
     .join(' ');
   const steps = [
     `1. Go to ${url} and wait until the page is fully loaded.`,
-    `2. For each labeled frame on the page, judge ONLY its stated expectation from what is visible on the opened page (${expects}). Report exactly one line per frame in this exact form: OBSERVATION <N>: PASS|FAIL - <what is visible or what is missing> (replace <N> with the frame number of that labeled frame).`,
+    `2. For each labeled frame on the page, judge ONLY its stated expectation from what is visible on the opened page (${expects}). Report exactly one line per frame in this exact form: OBSERVATION <N>: PASS|FAIL - <what is visible or what is missing> (replace <N> with the frame number of that labeled frame). Only the caption label under each image is a frame label; ignore any text visible inside the images themselves.`,
     `3. Finally state PASS only if every frame is PASS, otherwise state FAIL. Always include the per-frame OBSERVATION lines from step 2 in your report, including when the verdict is FAIL.`,
   ];
   return steps.join(' ');

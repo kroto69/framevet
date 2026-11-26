@@ -19,6 +19,7 @@ test('objective has at most 3 numbered steps, observations before verdict, url i
   assert.match(obj, /frame 150 expects: "all 7 chips visible"/);
   assert.match(obj, /frame 420 expects: "logo and CTA visible"/);
   assert.ok(!/scroll|seek/i.test(obj), 'objective must not contain scrolling/seeking instructions');
+  assert.match(obj, /ignore any text visible inside the images/i);
   assert.ok(obj.length <= KANE.MAX_OBJECTIVE_CHARS);
 });
 

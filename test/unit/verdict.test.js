@@ -170,6 +170,22 @@ test('parseRunEnd finds the terminal run_end event and ignores garbage', () => {
   assert.equal(parseRunEnd('no events here'), null);
 });
 
+test('verdict: observations for non-configured frames are ignored (e.g. Kane echoing text seen inside an image)', () => {
+  const v = computeVerdict({
+    frames: [620, 1856],
+    observations: [
+      { frame: 620, status: 'PASS', text: 'ok' },
+      { frame: 1856, status: 'PASS', text: 'ok' },
+      { frame: 420, status: 'FAIL', text: 'logo menutup CTA (echoed from image content)' },
+    ],
+    code: 0,
+    timedOut: false,
+  });
+  assert.equal(v.ok, true);
+  assert.equal(v.code, EXIT.OK);
+  assert.equal(v.observations.length, 2);
+});
+
 test('verdict: timeout maps to 13', () => {
   const v = computeVerdict({ frames: [150], observations: [], code: null, timedOut: true, timeoutSec: 360 });
   assert.equal(v.ok, false);

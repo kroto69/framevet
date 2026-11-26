@@ -63,10 +63,11 @@ function runEndNote(runEnd) {
 }
 
 export function computeVerdict({ frames, observations, code, signal, error, timedOut, timeoutSec, runEnd }) {
-  const obsList = observations.map((o) => ({ frame: o.frame, status: o.status, text: o.text }));
-  const byFrame = new Map(observations.map((o) => [o.frame, o]));
+  const relevant = observations.filter((o) => frames.includes(o.frame));
+  const obsList = relevant.map((o) => ({ frame: o.frame, status: o.status, text: o.text }));
+  const byFrame = new Map(relevant.map((o) => [o.frame, o]));
   const missing = frames.filter((f) => !byFrame.has(f));
-  const failed = observations.filter((o) => o.status === 'FAIL');
+  const failed = relevant.filter((o) => o.status === 'FAIL');
   const kaneFailed = code === KANE_EXIT.FAILED || (runEnd != null && runEnd.status === 'failed');
   const note = runEndNote(runEnd);
   if (timedOut) {
