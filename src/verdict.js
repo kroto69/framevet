@@ -8,22 +8,28 @@ export const KANE_EXIT = Object.freeze({ PASSED: 0, FAILED: 1, ERROR: 2, TIMEOUT
 
 export function parseObservations(raw) {
   const byFrame = new Map();
-  const text = String(raw || '');
-  for (const line of text.split(/\r?\n/)) {
-    if (!line.includes('OBSERVATION')) continue;
-    let hay = line;
-    try {
-      hay = JSON.stringify(JSON.parse(line));
-    } catch {
-      // truncated or non-JSON line: scan the raw line as-is
-    }
+  const scan = (hay) => {
     const m = OBS_RE.exec(hay);
-    if (m) {
-      const frame = Number(m[1]);
-      const status = m[2].toUpperCase();
-      const obsText = m[3].replace(/["'}]+$/, '').trim();
-      if (!byFrame.has(frame)) byFrame.set(frame, { frame, status, text: obsText });
+    if (!m) return;
+    const frame = Number(m[1]);
+    const status = m[2].toUpperCase();
+    const obsText = m[3].replace(/["'}]+$/, '').trim();
+    if (!byFrame.has(frame)) byFrame.set(frame, { frame, status, text: obsText });
+  };
+  for (const line of String(raw || '').split(/\r?\n/)) {
+    if (!line.includes('OBSERVATION')) continue;
+    let parsed = null;
+    try {
+      parsed = JSON.parse(line);
+    } catch {
+      parsed = null;
     }
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      for (const v of Object.values(parsed)) {
+        if (typeof v === 'string' && v.includes('OBSERVATION')) scan(v);
+      }
+    }
+    scan(line);
   }
   return [...byFrame.values()].sort((a, b) => a.frame - b.frame);
 }

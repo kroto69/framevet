@@ -20,6 +20,16 @@ test('parser extracts observations from NDJSON fields, raw lines, survives garba
   assert.match(obs[1].text, /logo missing/);
 });
 
+test('parser reads OBSERVATION from NDJSON string fields (remark) without trailing JSON junk', () => {
+  const raw = [
+    JSON.stringify({ step: 3, status: 'done', remark: 'OBSERVATION 150: PASS - All 7 model chips are fully visible within the viewport', v: 1, ts: '2026-11-26T09:21:06.860Z' }),
+    JSON.stringify({ type: 'run_end', status: 'passed', summary: 'ok', v: 1, ts: '2026-11-26T09:21:11.441Z' }),
+  ].join('\n');
+  const obs = parseObservations(raw);
+  assert.equal(obs.length, 1);
+  assert.deepEqual(obs[0], { frame: 150, status: 'PASS', text: 'All 7 model chips are fully visible within the viewport' });
+});
+
 test('parser keeps first observation per frame and sorts by frame', () => {
   const raw = [
     'OBSERVATION 420: PASS - later',
