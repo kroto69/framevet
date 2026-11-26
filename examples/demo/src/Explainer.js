@@ -145,10 +145,10 @@ function SceneTanpa() {
     AbsoluteFill,
     { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
     e(Header, {
-      pill: 'TANPA FRAMEVET',
+      pill: 'WITHOUT FRAMEVET',
       pillColor: RED,
-      title: 'Agent bisa nulis kode, tapi tidak bisa lihat hasil render',
-      sub: 'satu-satunya cara cek hasil: tunggu render penuh yang mahal',
+      title: 'Agents can write code, but cannot see the render',
+      sub: 'the only way to check the result: wait for the expensive full render',
       from: 0,
     }),
     e(
@@ -163,11 +163,11 @@ function SceneTanpa() {
           alignItems: 'center',
         },
       },
-      e(Chip, { label: 'edit kode', from: 60 }),
+      e(Chip, { label: 'edit code', from: 60 }),
       e(Arrow, { from: 120 }),
-      e(Chip, { label: 'render penuh, ~4 menit', from: 180, color: MUTED }),
+      e(Chip, { label: 'full render, ~4 min', from: 180, color: MUTED }),
       e(Arrow, { from: 240 }),
-      e(Chip, { label: 'bug baru ketahuan', from: 300, danger: true }),
+      e(Chip, { label: 'bug found too late', from: 300, danger: true }),
     ),
     e(
       'div',
@@ -190,7 +190,7 @@ function SceneTanpa() {
         e(
           'div',
           { style: { fontSize: 24, color: barGlow > 0.5 ? RED : MUTED, marginTop: 14, fontWeight: 700, opacity: barGlow } },
-          'setelah 4 menit: frame 150 ternyata rusak',
+          'after 4 minutes: frame 150 turns out broken',
         ),
       ),
     ),
@@ -198,14 +198,14 @@ function SceneTanpa() {
 }
 
 const STEPS = [
-  ['1', 'framevet.config.json', 'frame + ekspektasi'],
-  ['2', 'browser ensure', 'preflight cepat'],
-  ['3', 'remotion still --frame=N', '2-4 frame saja'],
-  ['4', 'gallery index.html', 'frame + label'],
-  ['5', 'serve 127.0.0.1:<port>', 'halaman lokal'],
-  ['6', 'kane-cli run --agent --url', 'Kane membuka halaman'],
-  ['7', 'OBSERVATION per frame', 'PASS/FAIL tiap frame'],
-  ['8', 'verdict', 'PASS hanya jika semua PASS'],
+  ['1', 'framevet.config.json', 'frames + expectations'],
+  ['2', 'browser ensure', 'fast preflight'],
+  ['3', 'remotion still --frame=N', 'just 2-4 frames'],
+  ['4', 'gallery index.html', 'frames + labels'],
+  ['5', 'serve 127.0.0.1:<port>', 'local page'],
+  ['6', 'kane-cli run --agent --url', 'Kane opens the page'],
+  ['7', 'OBSERVATION per frame', 'PASS/FAIL per frame'],
+  ['8', 'verdict', 'PASS only if all PASS'],
 ];
 
 function StepCard({ n, label, sub, from }) {
@@ -251,10 +251,10 @@ function SceneDengan() {
     AbsoluteFill,
     { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
     e(Header, {
-      pill: 'DENGAN FRAMEVET',
+      pill: 'WITH FRAMEVET',
       pillColor: ACCENT,
-      title: 'Cek dulu sebelum render mahal',
-      sub: 'beberapa frame kunci, dinilai Kane di browser asli, baru render kalau lolos',
+      title: 'Check first, render once',
+      sub: 'a few key frames, judged by Kane in a real browser, render only on pass',
       from: 0,
     }),
     rows.map((row, r) =>
@@ -300,15 +300,15 @@ function SceneDengan() {
             padding: '12px 28px',
           },
         },
-        'total cek: ~60 detik, bukan 4 menit',
+        'total check: ~60 seconds, not 4 minutes',
       ),
     ),
   );
 }
 
 const GALLERY = [
-  ['Frame 150', 'semua 7 chip terlihat penuh, tidak terpotong'],
-  ['Frame 420', 'logo dan teks CTA terlihat penuh'],
+  ['Frame 150', 'all 7 chips fully visible, none cut off'],
+  ['Frame 420', 'logo and CTA text fully visible'],
 ];
 
 function SceneKane() {
@@ -343,17 +343,17 @@ function SceneKane() {
     ),
   );
   const lines = [
-    ['OBSERVATION 150: PASS - semua chip terlihat penuh', GREEN],
-    ['OBSERVATION 420: FAIL - logo menutup teks CTA', RED],
-    ['run_end: failed -> exit 11, render tidak jalan', RED],
+    ['OBSERVATION 150: PASS - all chips fully visible', GREEN],
+    ['OBSERVATION 420: FAIL - logo covers the CTA text', RED],
+    ['run_end: failed -> exit 11, render never starts', RED],
   ];
   return e(
     AbsoluteFill,
     { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
     e(Header, {
-      pill: 'KANE YANG MENILAI',
+      pill: 'KANE DOES THE JUDGING',
       pillColor: DARK,
-      title: 'Kane membuka gallery, menilai tiap frame',
+      title: 'Kane opens the gallery and judges each frame',
       sub: 'kane-cli run "<objective>" --agent --headless --url http://127.0.0.1:<port>/',
       from: 0,
     }),
@@ -429,8 +429,8 @@ function VerdictCard({ from, danger }) {
   const color = danger ? RED : GREEN;
   const title = danger ? 'FAIL - exit 11' : 'PASS - exit 0';
   const lines = danger
-    ? ['render tidak pernah jalan', 'bukti: .framevet/<runId>/ (frame PNG, kane.ndjson)']
-    : ['render jalan SATU kali', 'hasil: out/<Composition>.mp4'];
+    ? ['render never starts', 'evidence: .framevet/<runId>/ (frame PNGs, kane.ndjson)']
+    : ['render runs ONCE', 'output: out/<Composition>.mp4'];
   return e(
     'div',
     { style: { flex: 1, ...f } },
@@ -447,16 +447,16 @@ function VerdictCard({ from, danger }) {
 
 function SceneHasil() {
   const recap = [
-    ['TANPA framevet', 'tunggu render ~4 menit, baru tahu ada bug', RED, '#fef2f2'],
-    ['DENGAN framevet', '~60 detik: PASS/FAIL jelas per frame, render hanya saat PASS', GREEN, '#ecfdf5'],
+    ['WITHOUT framevet', 'wait ~4 min for the render, only then find the bug', RED, '#fef2f2'],
+    ['WITH framevet', '~60 s: clear PASS/FAIL per frame, render only on PASS', GREEN, '#ecfdf5'],
   ];
   return e(
     AbsoluteFill,
     { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
     e(Header, {
-      pill: 'HASIL',
+      pill: 'RESULT',
       pillColor: GREEN,
-      title: 'Render mahal hanya jalan kalau gate lolos',
+      title: 'The expensive render only runs when the gate passes',
       from: 0,
     }),
     e(
@@ -498,7 +498,7 @@ function SceneHasil() {
       'div',
       { style: { position: 'absolute', top: 830, width: '100%', textAlign: 'center', ...fadeAt(440) } },
       e(Mono, { size: 27, color: INK }, 'framevet check  <Composition> --json'),
-      e(Mono, { size: 27, color: INK }, 'framevet render <Composition>   # gate dulu, render sekali kalau PASS'),
+      e(Mono, { size: 27, color: INK }, 'framevet render <Composition>   # gate first, render once on PASS'),
       e(
         'div',
         { style: { marginTop: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, ...fadeAt(520) } },

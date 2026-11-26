@@ -13,10 +13,10 @@
     "Explainer": {
       "frames": [620, 1856, 3093, 4331],
       "expect": {
-        "620": "the TANPA FRAMEVET scene is fully visible: headline, the three old-flow chips (edit kode -> render penuh ~4 menit -> bug baru ketahuan), and the render progress bar card",
-        "1856": "the DENGAN FRAMEVET scene shows all 8 numbered pipeline step cards with arrows in two rows, plus the ~60 detik badge",
+        "620": "the WITHOUT FRAMEVET scene is fully visible: headline, the three old-flow chips (edit code -> full render ~4 min -> bug found too late), and the render progress card",
+        "1856": "the WITH FRAMEVET scene shows all 8 numbered pipeline cards with arrows in two rows, plus the ~60 seconds badge",
         "3093": "the KANE scene shows the browser-style gallery with both frame cards (Frame 150 / Frame 420) and their expectation text, plus the dark terminal with the OBSERVATION lines",
-        "4331": "the HASIL scene shows both recap rows (TANPA vs DENGAN framevet), both verdict cards (FAIL exit 11 no render / PASS exit 0 render once), the framevet commands, and the Verified with Kane CLI badge"
+        "4331": "the RESULT scene shows both recap rows (WITHOUT vs WITH framevet), both verdict cards (FAIL exit 11 no render / PASS exit 0 render once), the framevet commands, and the Verified with Kane CLI badge"
       }
     }
   }
