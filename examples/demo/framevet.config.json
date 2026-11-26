@@ -11,12 +11,12 @@
       }
     },
     "Explainer": {
-      "frames": [900, 2400, 3600, 4650],
+      "frames": [620, 1856, 3093, 4331],
       "expect": {
-        "900": "the framevet pipeline diagram is fully visible: all 8 stage cards plus both verdict branches (FAIL exit 11 no render, PASS exit 0 render once) are readable",
-        "2400": "the mock gallery shows both frame cards with Frame 150 / Frame 420 labels and their expectation text, and the OBSERVATION lines are visible in the terminal card",
-        "3600": "the GATE FAILED scene is fully visible: exit 11 banner, the JSON report with rendered:false, and the evidence path .framevet/<runId>/",
-        "4650": "the GATE PASSED scene is fully visible: all PASS observation lines, rendered:true with out/PromoVideo.mp4, and the framevet commands plus repo URL text are readable"
+        "620": "the TANPA FRAMEVET scene is fully visible: headline, the three old-flow chips (edit kode -> render penuh ~4 menit -> bug baru ketahuan), and the render progress bar card",
+        "1856": "the DENGAN FRAMEVET scene shows all 8 numbered pipeline step cards with arrows in two rows, plus the ~60 detik badge",
+        "3093": "the KANE scene shows the browser-style gallery with both frame cards (Frame 150 / Frame 420) and their expectation text, plus the dark terminal with the OBSERVATION lines",
+        "4331": "the HASIL scene shows both recap rows (TANPA vs DENGAN framevet), both verdict cards (FAIL exit 11 no render / PASS exit 0 render once), the framevet commands, and the Verified with Kane CLI badge"
       }
     }
   }

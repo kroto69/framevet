@@ -1,38 +1,66 @@
 import React from 'react';
-import { AbsoluteFill, Sequence, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Sequence, interpolate, spring, useCurrentFrame } from 'remotion';
 
 const e = React.createElement;
 
-const BG = '#f6f7f9';
+const BG = '#f8fafc';
 const INK = '#0f172a';
 const MUTED = '#64748b';
 const ACCENT = '#2563eb';
-const GREEN = '#15803d';
+const GREEN = '#16a34a';
 const RED = '#dc2626';
 const CARD = '#ffffff';
 const BORDER = '#e2e8f0';
 const DARK = '#0f172a';
 
-function fadeAt(from, span = 18) {
+const DOT_BG = {
+  backgroundColor: BG,
+  backgroundImage: 'radial-gradient(circle, #dbe3ee 1.5px, transparent 1.5px)',
+  backgroundSize: '36px 36px',
+};
+
+function fadeAt(from, span = 16) {
   const frame = useCurrentFrame();
   const p = interpolate(frame, [from, from + span], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  return { opacity: p, transform: `translateY(${interpolate(p, [0, 1], [28, 0])}px)` };
+  return { opacity: p, transform: `translateY(${interpolate(p, [0, 1], [24, 0])}px)` };
 }
 
-function Heading({ title, sub, from = 0 }) {
+function Pill({ text, color, from = 0 }) {
   const f = fadeAt(from);
   return e(
     'div',
-    { style: { position: 'absolute', top: 90, width: '100%', textAlign: 'center', ...f } },
-    e('div', { style: { fontSize: 64, fontWeight: 800, color: INK } }, title),
-    sub ? e('div', { style: { fontSize: 32, color: MUTED, marginTop: 18 } }, sub) : null,
+    {
+      style: {
+        display: 'inline-block',
+        backgroundColor: color,
+        color: '#fff',
+        fontSize: 22,
+        fontWeight: 800,
+        letterSpacing: 2,
+        borderRadius: 999,
+        padding: '8px 22px',
+        ...f,
+      },
+    },
+    text,
   );
 }
 
-function Card({ fadeFrom, color, width = 380, children }) {
+function Header({ pill, pillColor, title, sub, from = 0 }) {
+  const f = fadeAt(from);
+  return e(
+    'div',
+    { style: { position: 'absolute', top: 64, left: 90, right: 90, ...f } },
+    e(Pill, { text: pill, color: pillColor, from: 0 }),
+    e('div', { style: { fontSize: 58, fontWeight: 800, color: INK, marginTop: 18 } }, title),
+    sub ? e('div', { style: { fontSize: 28, color: MUTED, marginTop: 12 } }, sub) : null,
+  );
+}
+
+function Card({ fadeFrom, accent = ACCENT, width = 400, children, style = {} }) {
   const f = fadeAt(fadeFrom);
   return e(
     'div',
@@ -41,248 +69,354 @@ function Card({ fadeFrom, color, width = 380, children }) {
         width,
         boxSizing: 'border-box',
         backgroundColor: CARD,
-        border: `2px solid ${BORDER}`,
-        borderTop: `8px solid ${color}`,
-        borderRadius: 18,
-        padding: '26px 28px',
+        border: `1px solid ${BORDER}`,
+        borderTop: `6px solid ${accent}`,
+        borderRadius: 20,
+        padding: '24px 28px',
+        boxShadow: '0 10px 30px rgba(15, 23, 42, 0.08)',
         opacity: f.opacity,
         transform: f.transform,
+        ...style,
       },
     },
     children,
   );
 }
 
-function Mono({ children, size = 26, color = '#e2e8f0', weight = 600 }) {
+function Mono({ children, size = 25, color = '#e2e8f0' }) {
   return e(
     'div',
-    { style: { fontFamily: 'monospace', fontSize: size, color, fontWeight: weight, lineHeight: 1.5 } },
+    { style: { fontFamily: 'monospace', fontSize: size, color, lineHeight: 1.55, fontWeight: 600 } },
     children,
   );
 }
 
-function SceneProblem() {
-  const t1 = fadeAt(10);
-  const t2 = fadeAt(60);
-  const t3 = fadeAt(130);
-  const bar = fadeAt(200, 30);
+function Arrow({ from }) {
+  const f = fadeAt(from);
+  return e(
+    'div',
+    {
+      style: {
+        alignSelf: 'center',
+        fontSize: 34,
+        fontWeight: 800,
+        color: MUTED,
+        padding: '0 6px',
+        opacity: f.opacity,
+      },
+    },
+    '->',
+  );
+}
+
+function Chip({ label, from, color = ACCENT, danger = false }) {
+  const f = fadeAt(from);
+  return e(
+    'div',
+    {
+      style: {
+        backgroundColor: danger ? '#fef2f2' : '#eff6ff',
+        border: `2px solid ${danger ? RED : color}`,
+        color: danger ? RED : INK,
+        borderRadius: 14,
+        padding: '14px 22px',
+        fontSize: 26,
+        fontWeight: 700,
+        opacity: f.opacity,
+        transform: f.transform,
+        whiteSpace: 'nowrap',
+      },
+    },
+    label,
+  );
+}
+
+function SceneTanpa() {
   const frame = useCurrentFrame();
-  const barP = interpolate(frame, [210, 560], [0.04, 0.97], {
+  const barP = interpolate(frame, [250, 1100], [0.05, 0.97], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const barGlow = interpolate(frame, [1050, 1180], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
   return e(
     AbsoluteFill,
-    { style: { backgroundColor: BG } },
-    e(
-      'div',
-      { style: { position: 'absolute', top: 330, width: '100%', textAlign: 'center', ...t1 } },
-      e('div', { style: { fontSize: 88, fontWeight: 800, color: INK } }, 'Agents write the code.'),
-    ),
-    e(
-      'div',
-      { style: { position: 'absolute', top: 470, width: '100%', textAlign: 'center', ...t2 } },
-      e('div', { style: { fontSize: 88, fontWeight: 800, color: RED } }, 'Agents cannot see the render.'),
-    ),
-    e(
-      'div',
-      { style: { position: 'absolute', top: 640, width: '100%', textAlign: 'center', ...t3 } },
-      e('div', { style: { fontSize: 38, color: MUTED } }, 'Bugs surface only after a slow full render.'),
-    ),
+    { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
+    e(Header, {
+      pill: 'TANPA FRAMEVET',
+      pillColor: RED,
+      title: 'Agent bisa nulis kode, tapi tidak bisa lihat hasil render',
+      sub: 'satu-satunya cara cek hasil: tunggu render penuh yang mahal',
+      from: 0,
+    }),
     e(
       'div',
       {
         style: {
           position: 'absolute',
-          top: 800,
-          left: '50%',
-          width: 900,
-          marginLeft: -450,
-          ...bar,
+          top: 330,
+          left: 90,
+          right: 90,
+          display: 'flex',
+          alignItems: 'center',
         },
       },
+      e(Chip, { label: 'edit kode', from: 60 }),
+      e(Arrow, { from: 120 }),
+      e(Chip, { label: 'render penuh, ~4 menit', from: 180, color: MUTED }),
+      e(Arrow, { from: 240 }),
+      e(Chip, { label: 'bug baru ketahuan', from: 300, danger: true }),
+    ),
+    e(
+      'div',
+      { style: { position: 'absolute', top: 560, left: 90, right: 90, ...fadeAt(380, 24) } },
       e(
-        'div',
-        { style: { fontFamily: 'monospace', fontSize: 26, color: MUTED, marginBottom: 12 } },
-        'npx remotion render ... 4 min later',
-      ),
-      e(
-        'div',
-        { style: { height: 26, borderRadius: 13, backgroundColor: BORDER, overflow: 'hidden' } },
-        e('div', { style: { height: '100%', width: `${barP * 100}%`, backgroundColor: ACCENT } }),
+        Card,
+        { fadeFrom: 0, accent: MUTED, width: '100%' },
+        e(Mono, { size: 26, color: MUTED }, '$ npx remotion render src/index.js PromoVideo'),
+        e(
+          'div',
+          { style: { height: 30, borderRadius: 15, backgroundColor: '#e2e8f0', marginTop: 18, overflow: 'hidden' } },
+          e('div', {
+            style: {
+              height: '100%',
+              width: `${barP * 100}%`,
+              backgroundColor: barGlow > 0.5 ? RED : ACCENT,
+            },
+          }),
+        ),
+        e(
+          'div',
+          { style: { fontSize: 24, color: barGlow > 0.5 ? RED : MUTED, marginTop: 14, fontWeight: 700, opacity: barGlow } },
+          'setelah 4 menit: frame 150 ternyata rusak',
+        ),
       ),
     ),
   );
 }
 
-const PIPELINE = [
-  ['framevet.config.json', 'frames + expectations', ACCENT],
-  ['browser ensure', 'preflight, no timer', ACCENT],
-  ['remotion still --frame=N', 'one frame at a time', ACCENT],
-  ['gallery index.html', 'frames + labels side by side', ACCENT],
-  ['serve 127.0.0.1:<port>', 'random localhost port', ACCENT],
-  ['kane-cli run --objective', 'Kane opens the page', ACCENT],
-  ['OBSERVATION <N>: PASS|FAIL', 'one line per frame', ACCENT],
-  ['verdict', 'PASS only if all PASS', INK],
+const STEPS = [
+  ['1', 'framevet.config.json', 'frame + ekspektasi'],
+  ['2', 'browser ensure', 'preflight cepat'],
+  ['3', 'remotion still --frame=N', '2-4 frame saja'],
+  ['4', 'gallery index.html', 'frame + label'],
+  ['5', 'serve 127.0.0.1:<port>', 'halaman lokal'],
+  ['6', 'kane-cli run --agent --url', 'Kane membuka halaman'],
+  ['7', 'OBSERVATION per frame', 'PASS/FAIL tiap frame'],
+  ['8', 'verdict', 'PASS hanya jika semua PASS'],
 ];
 
-function ScenePipeline() {
-  const h = fadeAt(0);
-  const boxes = PIPELINE.map(([label, sub, color], i) =>
-    e(
-      'div',
-      { key: label, style: { width: '25%', padding: 14, boxSizing: 'border-box' } },
-      e(
-        Card,
-        { fadeFrom: 40 + i * 22, color, width: '100%' },
-        e('div', { style: { fontFamily: 'monospace', fontSize: 25, fontWeight: 700, color: INK } }, label),
-        e('div', { style: { fontSize: 22, color: MUTED, marginTop: 8 } }, sub),
-      ),
-    ),
-  );
-  const b1 = fadeAt(40 + PIPELINE.length * 22 + 10);
-  const b2 = fadeAt(40 + PIPELINE.length * 22 + 34);
+function StepCard({ n, label, sub, from }) {
+  const f = fadeAt(from);
   return e(
-    AbsoluteFill,
-    { style: { backgroundColor: BG } },
-    e(
-      'div',
-      { style: { position: 'absolute', top: 80, width: '100%', textAlign: 'center', ...h } },
-      e('div', { style: { fontSize: 62, fontWeight: 800, color: INK } }, 'framevet gates the render'),
-      e(
-        'div',
-        { style: { fontSize: 30, color: MUTED, marginTop: 14 } },
-        'a few key frames, judged by Kane, before the full render',
-      ),
-    ),
+    'div',
+    { style: { display: 'flex', alignItems: 'center', opacity: f.opacity, transform: f.transform } },
     e(
       'div',
       {
         style: {
-          position: 'absolute',
-          top: 250,
-          left: 90,
-          right: 90,
+          width: 52,
+          height: 52,
+          borderRadius: 16,
+          backgroundColor: ACCENT,
+          color: '#fff',
+          fontSize: 28,
+          fontWeight: 800,
           display: 'flex',
-          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginRight: 16,
+          flexShrink: 0,
         },
       },
-      boxes.slice(0, 4),
-      boxes.slice(4),
+      n,
     ),
     e(
       'div',
-      { style: { position: 'absolute', top: 730, left: 90, right: 90, display: 'flex', gap: 40 } },
+      null,
+      e('div', { style: { fontFamily: 'monospace', fontSize: 24, fontWeight: 700, color: INK } }, label),
+      e('div', { style: { fontSize: 21, color: MUTED, marginTop: 4 } }, sub),
+    ),
+  );
+}
+
+function SceneDengan() {
+  const rows = [
+    STEPS.slice(0, 4).map((s, i) => ({ s, i })),
+    STEPS.slice(4).map((s, i) => ({ s, i: i + 4 })),
+  ];
+  return e(
+    AbsoluteFill,
+    { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
+    e(Header, {
+      pill: 'DENGAN FRAMEVET',
+      pillColor: ACCENT,
+      title: 'Cek dulu sebelum render mahal',
+      sub: 'beberapa frame kunci, dinilai Kane di browser asli, baru render kalau lolos',
+      from: 0,
+    }),
+    rows.map((row, r) =>
       e(
         'div',
-        { style: { flex: 1, ...b1 } },
-        e(
-          Card,
-          { fadeFrom: 0, color: RED, width: '100%' },
-          e('div', { style: { fontSize: 34, fontWeight: 800, color: RED } }, 'FAIL - exit 11'),
-          e('div', { style: { fontSize: 26, color: INK, marginTop: 10 } }, 'no render starts'),
-          e(
-            'div',
-            { style: { fontFamily: 'monospace', fontSize: 23, color: MUTED, marginTop: 8 } },
-            'evidence: .framevet/<runId>/ (frames, index.html, kane.ndjson)',
-          ),
-        ),
+        {
+          key: r,
+          style: {
+            position: 'absolute',
+            top: r === 0 ? 330 : 640,
+            left: 90,
+            right: 90,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          },
+        },
+        row.map(({ s, i }, k) => {
+          const from = 60 + i * 90;
+          return e(
+            React.Fragment,
+            { key: s[0] },
+            e(StepCard, { n: s[0], label: s[1], sub: s[2], from }),
+            k < row.length - 1 ? e(Arrow, { from: from + 40 }) : null,
+          );
+        }),
       ),
+    ),
+    e(
+      'div',
+      { style: { position: 'absolute', top: 900, left: 90, right: 90, textAlign: 'center', ...fadeAt(60 + 8 * 90) } },
       e(
         'div',
-        { style: { flex: 1, ...b2 } },
-        e(
-          Card,
-          { fadeFrom: 0, color: GREEN, width: '100%' },
-          e('div', { style: { fontSize: 34, fontWeight: 800, color: GREEN } }, 'PASS - exit 0'),
-          e('div', { style: { fontSize: 26, color: INK, marginTop: 10 } }, 'render runs ONCE'),
-          e(
-            'div',
-            { style: { fontFamily: 'monospace', fontSize: 23, color: MUTED, marginTop: 8 } },
-            'out/<Composition>.mp4',
-          ),
-        ),
+        {
+          style: {
+            display: 'inline-block',
+            backgroundColor: '#ecfdf5',
+            border: `2px solid ${GREEN}`,
+            color: GREEN,
+            fontSize: 26,
+            fontWeight: 800,
+            borderRadius: 999,
+            padding: '12px 28px',
+          },
+        },
+        'total cek: ~60 detik, bukan 4 menit',
       ),
     ),
   );
 }
 
 const GALLERY = [
-  ['Frame 150', 'all 7 model chips fully visible, none cut off'],
-  ['Frame 420', 'logo and CTA text fully visible'],
+  ['Frame 150', 'semua 7 chip terlihat penuh, tidak terpotong'],
+  ['Frame 420', 'logo dan teks CTA terlihat penuh'],
 ];
 
 function SceneKane() {
-  const cards = GALLERY.map(([label, expect], i) => {
-    const f = fadeAt(30 + i * 40);
-    return e(
-      'div',
-      { key: label, style: { flex: 1, padding: 16, ...f } },
-      e(
-        Card,
-        { fadeFrom: 0, color: ACCENT, width: '100%' },
-        e('div', { style: { fontSize: 40, fontWeight: 800, color: INK } }, label),
-        e(
-          'div',
-          { style: { marginTop: 10, height: 300, borderRadius: 12, backgroundColor: '#dbe4f0' } },
-          e(
-            'div',
-            {
-              style: {
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'monospace',
-                fontSize: 30,
-                color: MUTED,
-              },
-            },
-            'frame PNG',
-          ),
-        ),
-        e('div', { style: { fontSize: 24, color: MUTED, marginTop: 14 } }, `expects: ${expect}`),
-      ),
-    );
-  });
-  const lines = [
-    ['OBSERVATION 150: FAIL - last chip cut off at the right edge', RED],
-    ['OBSERVATION 420: PASS - logo and CTA fully visible', GREEN],
-    ['verdict: FAIL -> exit 11, render never starts', RED],
-  ];
-  return e(
-    AbsoluteFill,
-    { style: { backgroundColor: BG } },
-    e(Heading, { title: 'Kane opens the gallery', sub: 'kane-cli run --objective "...OBSERVATION <N>: PASS|FAIL - ..."', from: 0 }),
+  const cards = GALLERY.map(([label, expect], i) =>
     e(
       'div',
-      { style: { position: 'absolute', top: 260, left: 120, right: 120, display: 'flex' } },
-      cards,
-    ),
-    e(
-      'div',
-      { style: { position: 'absolute', top: 700, left: 120, right: 120 } },
+      { key: label, style: { flex: 1, padding: 12, ...fadeAt(60 + i * 50) } },
       e(
         Card,
-        { fadeFrom: 130, color: DARK, width: '100%' },
+        { fadeFrom: 0, accent: ACCENT, width: '100%' },
+        e('div', { style: { fontSize: 34, fontWeight: 800, color: INK } }, label),
         e(
           'div',
           {
             style: {
-              backgroundColor: DARK,
+              marginTop: 10,
+              height: 190,
               borderRadius: 12,
-              padding: '24px 30px',
-              minHeight: 190,
-              boxSizing: 'border-box',
+              backgroundColor: '#dbe4f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'monospace',
+              fontSize: 24,
+              color: MUTED,
             },
           },
+          'frame PNG',
+        ),
+        e('div', { style: { fontSize: 22, color: MUTED, marginTop: 12 } }, `expects: ${expect}`),
+      ),
+    ),
+  );
+  const lines = [
+    ['OBSERVATION 150: PASS - semua chip terlihat penuh', GREEN],
+    ['OBSERVATION 420: FAIL - logo menutup teks CTA', RED],
+    ['run_end: failed -> exit 11, render tidak jalan', RED],
+  ];
+  return e(
+    AbsoluteFill,
+    { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
+    e(Header, {
+      pill: 'KANE YANG MENILAI',
+      pillColor: DARK,
+      title: 'Kane membuka gallery, menilai tiap frame',
+      sub: 'kane-cli run "<objective>" --agent --headless --url http://127.0.0.1:<port>/',
+      from: 0,
+    }),
+    e(
+      'div',
+      { style: { position: 'absolute', top: 300, left: 90, right: 90, ...fadeAt(40) } },
+      e(
+        'div',
+        {
+          style: {
+            backgroundColor: CARD,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 18,
+            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.08)',
+            overflow: 'hidden',
+          },
+        },
+        e(
+          'div',
+          {
+            style: {
+              backgroundColor: '#eef2f7',
+              padding: '12px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            },
+          },
+          e('div', { style: { width: 12, height: 12, borderRadius: 6, backgroundColor: RED } }),
+          e('div', { style: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#f59e0b' } }),
+          e('div', { style: { width: 12, height: 12, borderRadius: 6, backgroundColor: GREEN } }),
+          e(
+            'div',
+            {
+              style: {
+                marginLeft: 14,
+                backgroundColor: '#fff',
+                border: `1px solid ${BORDER}`,
+                borderRadius: 999,
+                padding: '6px 18px',
+                fontFamily: 'monospace',
+                fontSize: 20,
+                color: MUTED,
+              },
+            },
+            'http://127.0.0.1:<port>/',
+          ),
+        ),
+        e('div', { style: { padding: 20, display: 'flex' } }, cards),
+      ),
+    ),
+    e(
+      'div',
+      { style: { position: 'absolute', top: 640, left: 90, right: 90 } },
+      e(
+        Card,
+        { fadeFrom: 220, accent: DARK, width: '100%' },
+        e(
+          'div',
+          { style: { backgroundColor: DARK, borderRadius: 12, padding: '18px 26px', minHeight: 170, boxSizing: 'border-box' } },
           lines.map(([text, color], i) => {
-            const f = fadeAt(150 + i * 45, 14);
-            return e(
-              'div',
-              { key: text, style: { ...f, opacity: f.opacity } },
-              e(Mono, { size: 27, color }, text),
-            );
+            const f = fadeAt(260 + i * 60, 14);
+            return e('div', { key: text, style: f }, e(Mono, { size: 24, color }, text));
           }),
         ),
       ),
@@ -290,111 +424,118 @@ function SceneKane() {
   );
 }
 
-function JsonCard({ fadeFrom, lines }) {
+function VerdictCard({ from, danger }) {
+  const f = fadeAt(from);
+  const color = danger ? RED : GREEN;
+  const title = danger ? 'FAIL - exit 11' : 'PASS - exit 0';
+  const lines = danger
+    ? ['render tidak pernah jalan', 'bukti: .framevet/<runId>/ (frame PNG, kane.ndjson)']
+    : ['render jalan SATU kali', 'hasil: out/<Composition>.mp4'];
   return e(
     'div',
-    { style: { ...fadeAt(fadeFrom) } },
+    { style: { flex: 1, ...f } },
     e(
       Card,
-      { fadeFrom: 0, color: DARK, width: '100%' },
-      e(
-        'div',
-        { style: { backgroundColor: DARK, borderRadius: 12, padding: '26px 32px' } },
-        lines.map(([text, color]) => e('div', { key: text }, e(Mono, { size: 27, color }, text))),
+      { fadeFrom: 0, accent: color, width: '100%' },
+      e('div', { style: { fontSize: 34, fontWeight: 800, color } }, title),
+      lines.map((t) =>
+        e('div', { key: t, style: { fontSize: 23, color: INK, marginTop: 10, fontFamily: 'monospace' } }, t),
       ),
     ),
   );
 }
 
-function SceneFail() {
-  const banner = fadeAt(0);
+function SceneHasil() {
+  const recap = [
+    ['TANPA framevet', 'tunggu render ~4 menit, baru tahu ada bug', RED, '#fef2f2'],
+    ['DENGAN framevet', '~60 detik: PASS/FAIL jelas per frame, render hanya saat PASS', GREEN, '#ecfdf5'],
+  ];
   return e(
     AbsoluteFill,
-    { style: { backgroundColor: BG } },
+    { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden' } },
+    e(Header, {
+      pill: 'HASIL',
+      pillColor: GREEN,
+      title: 'Render mahal hanya jalan kalau gate lolos',
+      from: 0,
+    }),
     e(
       'div',
-      { style: { position: 'absolute', top: 110, width: '100%', textAlign: 'center', ...banner } },
-      e('div', { style: { fontSize: 76, fontWeight: 800, color: RED } }, 'GATE FAILED - exit 11'),
-      e(
-        'div',
-        { style: { fontSize: 32, color: MUTED, marginTop: 16 } },
-        'Kane saw the bug in frame 150 - the render never started',
-      ),
-    ),
-    e(
-      'div',
-      { style: { position: 'absolute', top: 330, left: 260, right: 260 } },
-      e(JsonCard, {
-        fadeFrom: 50,
-        lines: [
-          ['{"composition":"PromoVideo","ok":false,"code":11,', '#e2e8f0'],
-          [' "reason":"frame 150: FAIL - last chip cut off",', '#fca5a5'],
-          [' "rendered":false}', '#fca5a5'],
-        ],
+      { style: { position: 'absolute', top: 300, left: 90, right: 90 } },
+      recap.map(([tag, text, color, bg], i) => {
+        const f = fadeAt(60 + i * 70);
+        return e(
+          'div',
+          {
+            key: tag,
+            style: {
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: bg,
+              border: `2px solid ${color}`,
+              borderRadius: 16,
+              padding: '20px 26px',
+              marginBottom: 18,
+              ...f,
+            },
+          },
+          e(
+            'div',
+            { style: { fontSize: 22, fontWeight: 800, color, letterSpacing: 1, marginRight: 24, whiteSpace: 'nowrap' } },
+            tag,
+          ),
+          e('div', { style: { fontSize: 27, fontWeight: 600, color: INK } }, text),
+        );
       }),
     ),
     e(
       'div',
-      { style: { position: 'absolute', top: 700, width: '100%', textAlign: 'center', ...fadeAt(120) } },
-      e(
-        'div',
-        { style: { fontFamily: 'monospace', fontSize: 28, color: INK } },
-        'evidence kept: .framevet/<runId>/frames/  index.html  kane.ndjson',
-      ),
-      e('div', { style: { fontSize: 28, color: MUTED, marginTop: 18 } }, 'agent reads reason + observations, fixes the composition, reruns the gate'),
+      { style: { position: 'absolute', top: 560, left: 90, right: 90, display: 'flex', gap: 30 } },
+      e(VerdictCard, { from: 220, danger: true }),
+      e(VerdictCard, { from: 320, danger: false }),
     ),
-  );
-}
-
-function ScenePass() {
-  const banner = fadeAt(0);
-  return e(
-    AbsoluteFill,
-    { style: { backgroundColor: BG } },
     e(
       'div',
-      { style: { position: 'absolute', top: 100, width: '100%', textAlign: 'center', ...banner } },
-      e('div', { style: { fontSize: 76, fontWeight: 800, color: GREEN } }, 'GATE PASSED - exit 0'),
+      { style: { position: 'absolute', top: 830, width: '100%', textAlign: 'center', ...fadeAt(440) } },
+      e(Mono, { size: 27, color: INK }, 'framevet check  <Composition> --json'),
+      e(Mono, { size: 27, color: INK }, 'framevet render <Composition>   # gate dulu, render sekali kalau PASS'),
       e(
         'div',
-        { style: { fontSize: 32, color: MUTED, marginTop: 14 } },
-        'every frame has an OBSERVATION line and all are PASS',
+        { style: { marginTop: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, ...fadeAt(520) } },
       ),
     ),
     e(
       'div',
-      { style: { position: 'absolute', top: 300, left: 260, right: 260 } },
-      e(JsonCard, {
-        fadeFrom: 40,
-        lines: [
-          ['OBSERVATION 150: PASS - all 7 chips fully visible', '#86efac'],
-          ['OBSERVATION 420: PASS - logo and CTA fully visible', '#86efac'],
-          ['{"ok":true,"code":0,"rendered":true} -> out/PromoVideo.mp4', '#e2e8f0'],
-        ],
-      }),
-    ),
-    e(
-      'div',
-      { style: { position: 'absolute', top: 660, width: '100%', textAlign: 'center', ...fadeAt(110) } },
-      e('div', { style: { fontFamily: 'monospace', fontSize: 30, color: INK } }, 'framevet check  <Composition> --json'),
-      e('div', { style: { fontFamily: 'monospace', fontSize: 30, color: INK, marginTop: 10 } }, 'framevet render <Composition>   # gate, then render once'),
+      { style: { position: 'absolute', bottom: 60, width: '100%', textAlign: 'center', ...fadeAt(560) } },
       e(
         'div',
-        { style: { fontSize: 28, color: ACCENT, fontWeight: 700, marginTop: 26 } },
-        'github.com/kroto69/framevet - Verified with Kane CLI',
+        {
+          style: {
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 12,
+            backgroundColor: '#ecfdf5',
+            border: `2px solid ${GREEN}`,
+            borderRadius: 999,
+            padding: '12px 26px',
+          },
+        },
+        e('div', { style: { width: 18, height: 18, borderRadius: 9, backgroundColor: GREEN } }),
+        e('div', { style: { fontSize: 26, fontWeight: 800, color: GREEN } }, 'github.com/kroto69/framevet - Verified with Kane CLI'),
       ),
     ),
   );
 }
 
 export function Explainer() {
+  const frame = useCurrentFrame();
+  const titleIn = spring({ frame, fps: 30, config: { damping: 16, mass: 0.7 } });
   return e(
     AbsoluteFill,
-    { style: { backgroundColor: BG, color: INK, fontFamily: 'sans-serif', overflow: 'hidden' } },
-    e(Sequence, { from: 0, durationInFrames: 600 }, e(SceneProblem)),
-    e(Sequence, { from: 600, durationInFrames: 1200 }, e(ScenePipeline)),
-    e(Sequence, { from: 1800, durationInFrames: 1200 }, e(SceneKane)),
-    e(Sequence, { from: 3000, durationInFrames: 1050 }, e(SceneFail)),
-    e(Sequence, { from: 4050, durationInFrames: 900 }, e(ScenePass)),
+    { style: { ...DOT_BG, fontFamily: 'sans-serif', color: INK, overflow: 'hidden', opacity: interpolate(titleIn, [0, 1], [0.6, 1]) } },
+    e(Sequence, { from: 0, durationInFrames: 1237 }, e(SceneTanpa)),
+    e(Sequence, { from: 1237, durationInFrames: 1238 }, e(SceneDengan)),
+    e(Sequence, { from: 2475, durationInFrames: 1237 }, e(SceneKane)),
+    e(Sequence, { from: 3712, durationInFrames: 1238 }, e(SceneHasil)),
   );
 }
