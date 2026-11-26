@@ -88,13 +88,26 @@ test('parser survives garbage and truncated lines; garbage-only output means no 
   assert.match(parseJsonStdout(badRes.stdout).reason, /no evidence for frame 150, 420/);
 });
 
-test('kane auth/setup failure (unknown exit code 42) maps to 12 with the raw code', { timeout: 60000 }, async () => {
+test('kane auth/setup failure (official exit code 2) maps to 12 with a login hint', { timeout: 60000 }, async () => {
   const project = makeProject();
   const res = await runGate(project, ['check', 'PromoVideo', '--json'], { FAKE_KANE_MODE: 'auth' });
   assert.equal(res.code, 12, res.stderr);
   const obj = parseJsonStdout(res.stdout);
   assert.equal(obj.stage, 'kane');
-  assert.match(obj.reason, /42/);
+  assert.match(obj.reason, /exit 2/);
+  assert.match(obj.reason, /kane-cli login/);
+  assert.equal(fs.existsSync(project.marker), false);
+});
+
+test('kane exit 1 with run_end failed but no OBSERVATION lines: exit 11, reason carries run_end summary', { timeout: 60000 }, async () => {
+  const project = makeProject();
+  const res = await runGate(project, ['check', 'PromoVideo', '--json'], { FAKE_KANE_MODE: 'failed-no-obs' });
+  assert.equal(res.code, 11, res.stderr);
+  const obj = parseJsonStdout(res.stdout);
+  assert.equal(obj.stage, 'kane');
+  assert.match(obj.reason, /Kane verdict: failed/);
+  assert.match(obj.reason, /Page did not load as expected/);
+  assert.match(obj.reason, /no evidence for frame 150, 420/);
   assert.equal(fs.existsSync(project.marker), false);
 });
 

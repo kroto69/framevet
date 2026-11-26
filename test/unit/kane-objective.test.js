@@ -11,7 +11,7 @@ const composition = {
 
 test('objective has at most 3 numbered steps, observations before verdict, url included', () => {
   const obj = buildObjective({ url: 'http://127.0.0.1:4321/', composition });
-  assert.match(obj, /1\. Open http:\/\/127\.0\.0\.1:4321\//);
+  assert.match(obj, /1\. Go to http:\/\/127\.0\.0\.1:4321\//);
   assert.match(obj, /2\./);
   assert.match(obj, /3\. Finally state PASS only if every frame is PASS/);
   assert.match(obj, /OBSERVATION <N>: PASS\|FAIL - /);
@@ -49,8 +49,16 @@ test('an expectation containing "{{" makes the built objective invalid', () => {
   assert.throws(() => validateObjective(buildObjective({ url: 'http://x/', composition: bad })), (e) => e.code === EXIT.CONFIG);
 });
 
-test('kane args and binary override via env', () => {
-  assert.deepEqual(kaneArgs('do it'), [KANE.RUN_SUBCOMMAND, KANE.OBJECTIVE_FLAG, 'do it']);
+test('kane args: positional objective + --agent/--headless/--url (official CLI shape), binary override via env', () => {
+  assert.deepEqual(kaneArgs('do it', 'http://127.0.0.1:9/'), [
+    KANE.RUN_SUBCOMMAND,
+    KANE.AGENT_FLAG,
+    KANE.HEADLESS_FLAG,
+    KANE.URL_FLAG,
+    'http://127.0.0.1:9/',
+    'do it',
+  ]);
+  assert.equal(KANE.RUN_SUBCOMMAND, 'run');
   assert.equal(kaneBin({}), 'kane-cli');
   assert.equal(kaneBin({ [KANE.BIN_ENV]: '/tmp/fake' }), '/tmp/fake');
 });

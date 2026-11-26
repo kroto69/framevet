@@ -5,7 +5,7 @@ import { loadConfig } from './config.js';
 import { ensureBrowser, renderStills } from './stills.js';
 import { writeGallery, serveDir } from './gallery.js';
 import { runKane } from './kane.js';
-import { parseObservations, computeVerdict } from './verdict.js';
+import { parseObservations, parseRunEnd, computeVerdict } from './verdict.js';
 import { humanReport, jsonReport } from './report.js';
 import { createCleanup, signalExitCode } from './cleanup.js';
 
@@ -15,22 +15,22 @@ const USAGE = `usage: framevet <check|render> <Composition> [--json]
 
 function hintFor(r, command) {
   if (r.ok) {
-    return command === 'render' ? 'render finished, output is above' : `gate passed — render with: framevet render ${r.composition}`;
+    return command === 'render' ? 'render finished, output is above' : `gate passed - render with: framevet render ${r.composition}`;
   }
   switch (r.stage) {
     case 'config':
       return 'fix framevet.config.json per the reason, then rerun';
     case 'browser':
-      return 'first run downloads the Remotion headless browser (~25 s) — check the Remotion install, then rerun';
+      return 'first run downloads the Remotion headless browser (~25 s) - check the Remotion install, then rerun';
     case 'stills':
       return `fix the composition error in the reason, then rerun: framevet check ${r.composition}`;
     case 'kane':
-      if (r.code === EXIT.SETUP) return `install kane-cli and log in as the human (kane-cli login), or set FRAMEVET_KANE_BIN — then rerun`;
+      if (r.code === EXIT.SETUP) return `install kane-cli and log in as the human (kane-cli login, check kane-cli whoami), or set FRAMEVET_KANE_BIN - then rerun`;
       if (r.code === EXIT.TIMEOUT) return 'raise kane.timeoutSec in framevet.config.json or simplify the page, then rerun';
       if (r.code === EXIT.CONFIG) return 'fix the config/expectation text per the reason, then rerun';
       return 'fix the composition so every expectation holds at its frame (see observations and evidence frames), then rerun';
     case 'render':
-      return 'the gate passed but the render itself failed — read the render output above';
+      return 'the gate passed but the render itself failed - read the render output above';
     default:
       return `rerun: framevet check ${r.composition}`;
   }
@@ -80,7 +80,7 @@ export async function main(argv, io) {
   };
   const announce = (stage, extra = '') => {
     result.stage = stage;
-    stderr.write(`[framevet] stage: ${stage}${extra ? ` — ${extra}` : ''}\n`);
+    stderr.write(`[framevet] stage: ${stage}${extra ? ` - ${extra}` : ''}\n`);
   };
 
   try {
@@ -120,6 +120,7 @@ export async function main(argv, io) {
     result.evidence.push(rel(path.join(runDir, 'kane.ndjson')));
     const kaneRes = await runKane(ctx, { url: served.url, composition: ctx.composition });
     const observations = parseObservations(kaneRes.raw);
+    const runEnd = parseRunEnd(kaneRes.raw);
     const verdict = computeVerdict({
       frames: ctx.composition.frames,
       observations,
@@ -128,6 +129,7 @@ export async function main(argv, io) {
       error: null,
       timedOut: kaneRes.timedOut,
       timeoutSec: config.timeoutSec,
+      runEnd,
     });
     result.observations = verdict.observations;
     if (!verdict.ok) {
